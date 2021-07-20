@@ -81,6 +81,7 @@ cc_library(
         ":shape",
         ":status",
         ":types",
+        ":util",
         "@com_google_absl//absl/container:flat_hash_map",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/status",
@@ -142,7 +143,10 @@ cc_library(
 cc_library(
     name = "model_builder",
     srcs = ["model_builder.cc"],
-    hdrs = ["model_builder.h"],
+    hdrs = [
+        "model_builder.h",
+        "model_builder_internal.h",
+    ],
     deps = [
         ":data_type",
         ":lstm_parser",
@@ -165,6 +169,7 @@ cc_library(
         "//tensorflow/lite:kernel_api",
         "//tensorflow/lite:util",
         "//tensorflow/lite/c:common",
+        "//tensorflow/lite/tools/versioning:gpu_compatibility",
         "//tensorflow/lite/delegates/gpu/common/transformations:model_transformations",
         "//tensorflow/lite/kernels:kernel_util",
         "//tensorflow/lite/kernels/internal:reference_base",
@@ -178,6 +183,7 @@ cc_test(
     deps = [
         ":data_type",
         ":model_builder",
+        ":operation_parser",
         ":shape",
         ":tensor",
         "//tensorflow/lite:framework",
