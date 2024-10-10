@@ -31,6 +31,7 @@ bzl_library(
     srcs = ["build_defs.bzl"],
     deps = [
         "@local_config_cuda//cuda:build_defs_bzl",
+        "@local_tsl//third_party/py/rules_pywrap:pywrap_bzl",
         "@local_tsl//tsl/platform:rules_cc_bzl",
         "@local_tsl//tsl/platform/default:cuda_build_defs_bzl",
     ] + stream_executor_build_defs_bzl_deps(),
@@ -146,6 +147,11 @@ tf_proto_library(
     srcs = ["device_description.proto"],
     make_default_target_header_only = True,
     protodeps = ["//xla:autotune_results_proto"],
+)
+
+cc_library(
+    name = "activate_context",
+    hdrs = ["activate_context.h"],
 )
 
 cc_library(

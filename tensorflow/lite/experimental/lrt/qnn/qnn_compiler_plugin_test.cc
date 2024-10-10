@@ -22,7 +22,7 @@
 #include "tensorflow/lite/experimental/lrt/cc/lite_rt_support.h"
 #include "tensorflow/lite/experimental/lrt/core/graph_tools.h"
 #include "tensorflow/lite/experimental/lrt/core/model.h"
-#include "tensorflow/lite/experimental/lrt/test_data/test_data_util.h"
+#include "tensorflow/lite/experimental/lrt/test/common.h"
 
 namespace {
 
@@ -34,21 +34,21 @@ UniqueLrtCompilerPlugin GetQnnPlugin() {
 }
 
 TEST(TestQnnPlugin, GetConfigInfo) {
-  EXPECT_STREQ(LrtPluginSocManufacturer(), "QNN");
+  EXPECT_STREQ(LrtPluginSocManufacturer(), "Qualcomm");
 
   auto plugin = GetQnnPlugin();
 
-  ASSERT_EQ(1, LrtPluginNumSupportedSocModels(plugin.get()));
+  ASSERT_GE(LrtPluginNumSupportedSocModels(plugin.get()), 1);
 
   const char* config_id;
   LRT_CHECK_STATUS_OK(
-      LrtPluginGetSupportedSocModelId(plugin.get(), 0, &config_id));
-  EXPECT_STREQ(config_id, "HTP_Reference");
+      LrtPluginGetSupportedSocModel(plugin.get(), 0, &config_id));
+  EXPECT_STREQ(config_id, "V68");
 }
 
 TEST(TestQnnPlugin, PartitionMulOps) {
   auto plugin = GetQnnPlugin();
-  auto model = LoadTestFileModel("one_mul.tflite");
+  auto model = lrt::testing::LoadTestFileModel("one_mul.tflite");
 
   LrtOpListT selected_ops;
   ASSERT_STATUS_OK(
@@ -59,13 +59,14 @@ TEST(TestQnnPlugin, PartitionMulOps) {
 
 TEST(TestQnnPlugin, CompileMulSubgraph) {
   auto plugin = GetQnnPlugin();
-  auto model = LoadTestFileModel("one_mul.tflite");
+  auto model = lrt::testing::LoadTestFileModel("one_mul.tflite");
 
   ASSERT_RESULT_OK_ASSIGN(auto subgraph,
                           ::graph_tools::GetSubgraph(model.get()));
 
   LrtCompiledResult compiled;
-  ASSERT_STATUS_OK(LrtPluginCompile(plugin.get(), &subgraph, 1, &compiled));
+  ASSERT_STATUS_OK(
+      LrtPluginCompile(plugin.get(), "V75", &subgraph, 1, &compiled));
 
   const void* byte_code;
   size_t byte_code_size;

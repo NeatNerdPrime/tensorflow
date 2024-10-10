@@ -43,6 +43,8 @@ LrtStatus LegalizeElementType(LrtElementType src, Qnn_DataType_t& dest) {
 }
 
 LrtStatus LegalizeShapeInfo(const LrtTensorManager& src, Qnn_Tensor_t& dest) {
+  LRT_ENSURE_SUPPORTED(!src.HasStrides(), "Strides not yet supported");
+
   dest.v2.rank = src.Rank();
   dest.v2.dimensions = new uint32_t[dest.v2.rank];
   for (int i = 0; i < dest.v2.rank; ++i) {
@@ -53,6 +55,15 @@ LrtStatus LegalizeShapeInfo(const LrtTensorManager& src, Qnn_Tensor_t& dest) {
     dest.v2.dimensions[i] = src.Dims()[i];
   }
   return kLrtStatusOk;
+}
+
+void FreeTensorDims(Qnn_Tensor_t& tensor) {
+  if (tensor.version == QNN_TENSOR_VERSION_2 &&
+      tensor.v2.dimensions != nullptr) {
+    delete[] tensor.v2.dimensions;
+    tensor.v2.dimensions = nullptr;
+    tensor.v2.rank = 0;
+  }
 }
 
 }  // namespace
@@ -70,14 +81,11 @@ void SetOutputTensorAttrs(Qnn_Tensor_t& tensor) {
 }
 
 void ResetTensor(Qnn_Tensor_t& tensor) {
+  FreeTensorDims(tensor);
   tensor = QNN_TENSOR_INIT;
   tensor.version = QNN_TENSOR_VERSION_2;
   tensor.v2 = QNN_TENSOR_V2_INIT;
   tensor.v2.dataFormat = QNN_TENSOR_DATA_FORMAT_DENSE;
-  if (tensor.v2.dimensions != nullptr) {
-    delete[] tensor.v2.dimensions;
-    tensor.v2.dimensions = nullptr;
-  }
 }
 
 Qnn_Tensor_t BuildDefaultTensor(uint32_t id) {

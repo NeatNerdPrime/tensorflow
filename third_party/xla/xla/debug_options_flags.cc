@@ -135,7 +135,7 @@ DebugOptions DefaultDebugOptionsIgnoringFlags() {
       kDefaultAllGatherCombineThreshold);
   opts.set_xla_gpu_reduce_scatter_combine_threshold_bytes(
       kDefaultReduceScatterCombineThreshold);
-  opts.set_xla_gpu_enable_all_gather_combine_by_dim(true);
+  opts.set_xla_gpu_enable_all_gather_combine_by_dim(false);
   opts.set_xla_gpu_enable_reduce_scatter_combine_by_dim(true);
   opts.set_xla_gpu_enable_approx_costly_collectives(false);
 
@@ -148,7 +148,7 @@ DebugOptions DefaultDebugOptionsIgnoringFlags() {
   opts.set_xla_enable_dumping(true);
 
   opts.set_xla_gpu_enable_custom_fusions(false);
-  opts.set_xla_gpu_enable_dynamic_slice_fusion(true);
+  opts.set_xla_gpu_enable_dynamic_slice_fusion(false);
   opts.set_xla_gpu_nccl_termination_timeout_seconds(-1);
   opts.set_xla_gpu_enable_shared_constants(true);
   opts.set_xla_gpu_enable_nccl_user_buffers(false);
@@ -171,8 +171,8 @@ DebugOptions DefaultDebugOptionsIgnoringFlags() {
 
   opts.set_xla_gpu_enable_pipelined_collectives(false);
   opts.set_xla_gpu_enable_pipelined_all_reduce(false);
-  opts.set_xla_gpu_enable_pipelined_all_gather(false);
-  opts.set_xla_gpu_enable_pipelined_reduce_scatter(false);
+  opts.set_xla_gpu_enable_pipelined_all_gather(true);
+  opts.set_xla_gpu_enable_pipelined_reduce_scatter(true);
   opts.set_xla_gpu_enable_pipelined_p2p(false);
 
   opts.set_xla_gpu_run_post_layout_collective_pipeliner(false);
@@ -296,6 +296,7 @@ DebugOptions DefaultDebugOptionsIgnoringFlags() {
   opts.set_xla_gpu_experimental_disable_binary_libraries(false);
   opts.set_xla_experimental_ignore_channel_id(false);
   opts.set_xla_gpu_dot_merger_threshold_mb(32);
+  opts.set_xla_enable_fast_math(false);
   return opts;
 }
 
@@ -2003,6 +2004,12 @@ void MakeDebugOptionsFlags(std::vector<tsl::Flag>* flag_list,
       int32_setter_for(&DebugOptions::set_xla_gpu_dot_merger_threshold_mb),
       debug_options->xla_gpu_dot_merger_threshold_mb(),
       "Dot merger pass threshold to be set in MB."));
+
+  flag_list->push_back(
+      tsl::Flag("xla_enable_fast_math",
+                bool_setter_for(&DebugOptions::set_xla_enable_fast_math),
+                debug_options->xla_enable_fast_math(),
+                "Enable optimizations that assume finite math, i.e., no NaN."));
 }  // NOLINT(readability/fn_size)
 
 // Allocates flag_values and flag_objects; this function must not be called more
