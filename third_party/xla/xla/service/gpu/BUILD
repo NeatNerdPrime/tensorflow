@@ -844,6 +844,8 @@ xla_cc_test(
         "//xla/stream_executor:device_description",
         "//xla/tests:hlo_test_base",
         "//xla/tests:xla_internal_test_main",  # fixdeps: keep
+        "//xla/tsl/platform:status_matchers",
+        "//xla/tsl/platform:statusor",
         "@com_google_absl//absl/status:statusor",
         "@com_google_googletest//:gtest",
         "@local_tsl//tsl/platform:status_matchers",
@@ -1551,6 +1553,7 @@ cc_library(
         "//xla/service/llvm_ir:llvm_command_line_options",
         "//xla/service/llvm_ir:llvm_util",
         "//xla/service/spmd:collective_permute_motion",
+        "//xla/service/spmd:schedule_aware_collective_ops_cse",
         "//xla/service:all_reduce_promotion",
         "//xla/service:all_reduce_reassociate",
         "//xla/service:all_reduce_simplifier",
@@ -1870,7 +1873,7 @@ xla_test(
     backends = [
         "gpu_v100",
         "gpu_a100",
-        "gpu_b100",
+        "gpu_b200",
     ],
     tags = [
         "cuda-only",
@@ -2211,6 +2214,7 @@ cc_library(
         "//xla/hlo/pass:hlo_pass_pipeline",
         "//xla/service:collective_ops_utils",
         "//xla/service:collective_pipeliner",
+        "@com_google_absl//absl/container:flat_hash_set",
         "@com_google_absl//absl/log:check",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
@@ -2618,7 +2622,7 @@ xla_test(
     backends = [
         "gpu_a100",
         "gpu_h100",
-        "gpu_b100",
+        "gpu_b200",
     ],
     deps = [
         ":variant_visitor",
@@ -2865,7 +2869,7 @@ xla_test(
         "gpu_v100",
         "gpu_a100",
         "gpu_h100",
-        "gpu_b100",
+        "gpu_b200",
         "gpu_amd_any",
     ],
     tags = [
@@ -2949,7 +2953,7 @@ xla_test(
     srcs = ["determinism_test.cc"],
     backends = [
         "gpu_a100",
-        "gpu_b100",
+        "gpu_b200",
         "gpu_amd_any",
     ],
     deps = [
