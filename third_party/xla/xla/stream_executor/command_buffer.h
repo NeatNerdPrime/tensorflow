@@ -87,6 +87,21 @@ class CommandBuffer {
   //
   enum class State { kCreate, kUpdate, kFinalized };
 
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, State state) {
+    switch (state) {
+      case CommandBuffer::State::kCreate:
+        sink.Append("create");
+        break;
+      case CommandBuffer::State::kUpdate:
+        sink.Append("update");
+        break;
+      case CommandBuffer::State::kFinalized:
+        sink.Append("finalized");
+        break;
+    }
+  }
+
   // Command buffers have two modes of execution:
   //
   //   (1) kPrimary: command buffer can be submitted for execution via
@@ -96,12 +111,15 @@ class CommandBuffer {
   //
   enum class Mode { kPrimary, kNested };
 
-  friend absl::string_view ModeToString(Mode mode) {
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, Mode mode) {
     switch (mode) {
       case CommandBuffer::Mode::kPrimary:
-        return "primary";
+        sink.Append("primary");
+        break;
       case CommandBuffer::Mode::kNested:
-        return "nested";
+        sink.Append("nested");
+        break;
     }
   }
 
