@@ -102,6 +102,7 @@ cc_library(
 cc_library(
     name = "gpu_constants",
     hdrs = ["gpu_constants.h"],
+    deps = ["//xla/codegen/emitters:kernel_arguments"],
 )
 
 cc_library(
@@ -320,13 +321,13 @@ cc_library(
         ":backend_configs_cc",
         ":cublas_cudnn",
         ":execution_stream_assignment",
+        ":gpu_constants",
         ":gpu_conv_runner",
         ":gpu_norm_runner",
         ":hlo_fusion_analysis",
         ":ir_emission_utils",
         ":ir_emitter",
         ":ir_emitter_context",
-        ":kernel_arguments",
         ":kernel_reuse_cache",
         ":launch_dimensions",
         ":matmul_utils",
@@ -380,6 +381,7 @@ cc_library(
         "//xla/backends/gpu/runtime:triangular_solve_thunk",
         "//xla/backends/gpu/runtime:wait_for_streams_thunk",
         "//xla/backends/gpu/runtime:while_thunk",
+        "//xla/codegen/emitters:kernel_arguments",
         "//xla/ffi:attribute_map",
         "//xla/ffi:ffi_api",
         "//xla/ffi/api:c_api",
@@ -1530,7 +1532,6 @@ cc_library(
         "//xla/service/gpu/transforms:algorithm_checker",
         "//xla/service/gpu/transforms:async_collective_annotator",
         "//xla/service/gpu/transforms:async_wrapper",
-        "//xla/service/gpu/transforms:collective_permute_cycle_decomposer",
         "//xla/service/gpu/transforms:command_buffer_scheduling",
         "//xla/service/gpu/transforms:conv_rewriter",
         "//xla/service/gpu/transforms:cudnn_custom_call_converter",
@@ -1562,6 +1563,7 @@ cc_library(
         "//xla/service/gpu/transforms:reduction_splitter",
         "//xla/service/gpu/transforms:rename_fusions",
         "//xla/service/gpu/transforms:sanitize_constant_names",
+        "//xla/service/gpu/transforms:scalar_constant_sinker",
         "//xla/service/gpu/transforms:scatter_expander",
         "//xla/service/gpu/transforms:scatter_slice_simplifier",
         "//xla/service/gpu/transforms:softmax_rewriter_triton",
@@ -1581,6 +1583,7 @@ cc_library(
         "//xla/service/gpu/transforms/collectives:all_reduce_decomposer",
         "//xla/service/gpu/transforms/collectives:all_reduce_splitter",
         "//xla/service/gpu/transforms/collectives:collective_combiner_annotator",
+        "//xla/service/gpu/transforms/collectives:collective_permute_cycle_decomposer",
         "//xla/service/gpu/transforms/collectives:collective_select_folder",
         "//xla/service/gpu/transforms/collectives:convert_async_collectives_to_sync",
         "//xla/service/gpu/transforms/collectives:gpu_all_gather_combiner",
@@ -2759,10 +2762,10 @@ cc_library(
     hdrs = ["kernel_reuse_cache.h"],
     deps = [
         ":executable_proto_cc",
-        ":kernel_arguments",
         ":launch_dimensions",
         "//xla:status_macros",
         "//xla:util",
+        "//xla/codegen/emitters:kernel_arguments",
         "//xla/hlo/ir:hlo",
         "//xla/stream_executor:launch_dim",
         "//xla/stream_executor/gpu:tma_metadata",
@@ -2789,25 +2792,6 @@ xla_cc_test(
         "@com_google_absl//absl/log:check",
         "@com_google_googletest//:gtest",
         "@local_tsl//tsl/platform:env",
-    ],
-)
-
-cc_library(
-    name = "kernel_arguments",
-    srcs = ["kernel_arguments.cc"],
-    hdrs = ["kernel_arguments.h"],
-    deps = [
-        ":gpu_constants",
-        "//xla:shape_util",
-        "//xla/hlo/ir:hlo",
-        "//xla/service:buffer_assignment",
-        "@com_google_absl//absl/container:flat_hash_map",
-        "@com_google_absl//absl/container:flat_hash_set",
-        "@com_google_absl//absl/status",
-        "@com_google_absl//absl/status:statusor",
-        "@com_google_absl//absl/types:span",
-        "@local_tsl//tsl/platform:errors",
-        "@local_tsl//tsl/platform:statusor",
     ],
 )
 
