@@ -13,12 +13,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef XLA_PYTHON_VERSION_H_
-#define XLA_PYTHON_VERSION_H_
+#ifndef XLA_HLO_ANALYSIS_STABLEHLO_INDEXING_ANALYSIS_H_
+#define XLA_HLO_ANALYSIS_STABLEHLO_INDEXING_ANALYSIS_H_
 
-// An increasing version number to protect jax code against breaking changes.
-// In JAX, reference this via jax._src.lib.ifrt_version.
-#define JAX_IFRT_VERSION_NUMBER \
-  45  // Refresh custom layouts when copying an array across clients.
+#include "mlir/IR/Operation.h"
 
-#endif  // XLA_PYTHON_VERSION_H_
+namespace xla {
+struct HloInstructionIndexing;
+
+HloInstructionIndexing ComputeOutputToInputIndexing(mlir::Operation* op,
+                                                    int output_id);
+
+}  // namespace xla
+
+#endif  // XLA_HLO_ANALYSIS_STABLEHLO_INDEXING_ANALYSIS_H_
